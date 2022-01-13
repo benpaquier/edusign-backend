@@ -7,6 +7,8 @@ const morgan = require("morgan")
 app.use(morgan("tiny"))
 app.use(cors())
 
+app.use(express.static("public"))
+
 app.get('/', (req, res) => {
   fs.readFile('./data.json', (err, data) => {
     res.json(JSON.parse(data))
