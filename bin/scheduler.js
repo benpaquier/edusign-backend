@@ -77,62 +77,63 @@ const getStudents = async ids => {
 
 
 const job = async () => {
-
-  const courses = await getCourses()
-  let students = []
+  console.log("doing job")
   let ranks = []
-  
-  if (courses.length > 0) {
-    let uniqueIds = courses.map(course => (
-      course.students.map(s => s.studentId)
-    )) || []
-  
-    uniqueIds = uniq(uniqueIds.flat())
-  
-    students = await getStudents(uniqueIds)
-  }
 
-  if (students.length > 0) { 
-    courses.forEach(course => {
-      course.students.forEach(s => {
-        const existingRank = ranks.find(rank => rank.id === s.studentId)
+  try {
+    const courses = await getCourses()
+    let students = []
+    
+    if (courses.length > 0) {
+      let uniqueIds = courses.map(course => (
+        course.students.map(s => s.studentId)
+      )) || []
+    
+      uniqueIds = uniq(uniqueIds.flat())
+    
+      students = await getStudents(uniqueIds)
+    }
 
-        if (existingRank) {
-          const newRank = {
-            ...existingRank,
-            delay: existingRank.delay + s.delay
+    if (students.length > 0) { 
+      courses.forEach(course => {
+        course.students.forEach(s => {
+          const existingRank = ranks.find(rank => rank.id === s.studentId)
+
+          if (existingRank) {
+            const newRank = {
+              ...existingRank,
+              delay: existingRank.delay + s.delay
+            }
+
+            const rankIndex = ranks.findIndex(r => r.id === existingRank.id)
+            ranks[rankIndex] = newRank
+          } else {
+            ranks.push({
+              id: s.studentId,
+              delay: s.delay
+            })
           }
-
-          const rankIndex = ranks.findIndex(r => r.id === existingRank.id)
-          ranks[rankIndex] = newRank
-        } else {
-          ranks.push({
-            id: s.studentId,
-            delay: s.delay
-          })
-        }
+        })
       })
-    })
 
-    ranks = ranks.sort((a, b) => b.delay - a.delay).map((rank, i) => ({
-      rank: i + 1,
-      firstName: students.find(s => s.ID === rank.id).FIRSTNAME,
-      lastName: students.find(s => s.ID === rank.id).LASTNAME,
-      delay: rank.delay
-    }))
+      ranks = ranks.sort((a, b) => b.delay - a.delay).map((rank, i) => ({
+        rank: i + 1,
+        firstName: students.find(s => s.ID === rank.id).FIRSTNAME,
+        lastName: students.find(s => s.ID === rank.id).LASTNAME,
+        delay: rank.delay
+      }))
+    }
+
+    console.log("ranks", ranks)
+  } catch (error) {
+    console.log(error)
   }
-
-  console.log("ranks", ranks)
-
-
 
   try {
     const data = await Edusign.findOneAndUpdate(
       { _id: "61e0105374efbca54f45527c" },
       {
-        data: {
-          hello: ranks
-        }
+        data: ranks
       },
       { new: true }
     )
