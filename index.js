@@ -5,19 +5,31 @@ const port = PORT || 3000;
 
 const express = require("express")
 const app = express()
-const fs = require('fs')
 const cors = require("cors")
 const morgan = require("morgan")
+const mongoose = require("mongoose")
+const Edusign = require("./models/Edusign")
 
 app.use(morgan("tiny"))
 app.use(cors())
 
 app.use(express.static("public"))
 
-app.get('/', (req, res) => {
-  fs.readFile('./data.json', (err, data) => {
-    res.json(JSON.parse(data))
-  })
+mongoose.connect("mongodb+srv://admin:admin@cluster0.zjt5k.mongodb.net/test")
+const db = mongoose.connection
+
+db.on("error", (err) => console.log(err))
+db.once("open", () => console.log("connected to db"))
+
+app.get('/', async (req, res) => {
+  try {
+    const data = await Edusign.findById("61e0105374efbca54f45527c").exec()
+    console.log(data)
+    res.json(data)
+  } catch (err) {
+    console.log("get datas error")
+    console.log(err)
+  }
 })
 
 app.listen(port, process.env.HOST, () => {

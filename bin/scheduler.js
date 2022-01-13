@@ -1,32 +1,29 @@
-const fs = require('fs')
+const mongoose = require("mongoose")
+const Edusign = require("../models/Edusign")
 
-const job = () => {
-  const number = Math.floor(Math.random() * 1000) + 1
-  const array = [number]
-  fs.readFile('./data.json', (err, data) => {
-    console.log("first err", err)
-    console.log("first read")
-    console.log(JSON.parse(data))
+mongoose.connect("mongodb+srv://admin:admin@cluster0.zjt5k.mongodb.net/test")
+const db = mongoose.connection
 
-    fs.writeFile('./data.json', JSON.stringify(array), (err) => {
-      console.log("write error", err)
+db.on("error", (err) => console.log(err))
+db.once("open", () => console.log("connected to db"))
 
-      fs.readFile('./data.json', (err, data) => {
-        console.log("second read error", err)
-        console.log("second read")
-        console.log(JSON.parse(data))
-      })
-    })
-  })
-
-  // fs.writeFile('./data.json', JSON.stringify(2), (err) => {
-  //   if (err) {
-  //     console.log(err)
-  //     return
-  //   }
-
-  //   // console.log(array)
-  // })
+const job = async () => {
+  try {
+    const data = await Edusign.findOneAndUpdate(
+      { _id: "61e0105374efbca54f45527c" },
+      {
+        data: {
+          hello: "hello"
+        }
+      },
+      { new: true }
+    )
+    
+    console.log(data)
+  } catch (error) {
+    console.log("err update")
+    console.log(error)
+  }
 }
 
 job()
