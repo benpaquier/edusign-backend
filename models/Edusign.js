@@ -1,7 +1,9 @@
 const { Schema, model } = require("mongoose")
 
 const EdusignSchema = Schema({
-  data: Object
+  courses: Object,
+  students: Object,
+  ranks: Object
 })
 
 const Edusign = model("Edusign", EdusignSchema)

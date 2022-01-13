@@ -78,11 +78,12 @@ const getStudents = async ids => {
 
 const job = async () => {
   console.log("doing job")
+  let courses = []
   let ranks = []
+  let students = []
 
   try {
-    const courses = await getCourses()
-    let students = []
+    courses = await getCourses()
     
     if (courses.length > 0) {
       let uniqueIds = courses.map(course => (
@@ -133,7 +134,9 @@ const job = async () => {
     const data = await Edusign.findOneAndUpdate(
       { _id: "61e0105374efbca54f45527c" },
       {
-        data: ranks
+        ranks: ranks,
+        courses: courses,
+        students: students
       },
       { new: true }
     )
