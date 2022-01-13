@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 
 const { PORT } = process.env
 const port = PORT || 3000;
@@ -9,6 +9,10 @@ const cors = require("cors")
 const morgan = require("morgan")
 const mongoose = require("mongoose")
 const Edusign = require("./models/Edusign")
+
+const { REACT_APP_EDUSIGN_TOKEN } = process.env
+
+console.log(REACT_APP_EDUSIGN_TOKEN)
 
 app.use(morgan("tiny"))
 app.use(cors())
